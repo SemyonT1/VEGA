@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>СУБД Енисей — Вход</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 14px;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .sidebar {
+      width: 64px;
+      background: #2b3a4a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      color: #b0bec5;
+    }
+
+    .sidebar-toggle {
+      width: 100%;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1e2c3a;
+      border-bottom: 1px solid #3a4f63;
+      cursor: pointer;
+      color: #cfd8dc;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .sidebar-toggle:hover { background: #17232e; }
+
+    .sidebar-nav {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 8px;
+      gap: 4px;
+      overflow: hidden;
+    }
+
+    .nav-item {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #90a4ae;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-item:hover { background: #3a4f63; color: #eceff1; }
+    .nav-item.active { color: #4dd0e1; }
+    .nav-item svg { width: 22px; height: 22px; }
+
+    .sidebar-footer {
+      padding: 8px 0 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-top: 1px solid #3a4f63;
+      width: 100%;
+    }
+    .sidebar-version {
+      font-size: 9px;
+      color: #607d8b;
+      text-align: center;
+      line-height: 1.3;
+      padding: 8px 4px;
+    }
+    .sidebar-login-label {
+      width: 100%;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1e2c3a;
+      font-size: 11px;
+      color: #90a4ae;
+      border-top: 1px solid #3a4f63;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .main-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 20px;
+      height: 52px;
+      border-bottom: 1px solid #e0e0e0;
+      flex-shrink: 0;
+    }
+    .header-icon { color: #607d8b; display: flex; align-items: center; }
+    .header-icon svg { width: 20px; height: 20px; }
+    .header-title {
+      font-size: 17px;
+      font-weight: 400;
+      color: #37474f;
+    }
+
+    .main-body { padding: 28px 32px; flex: 1; }
+
+    .login-hint {
+      font-size: 13px;
+      color: #546e7a;
+      margin-bottom: 16px;
+    }
+
+    .form-group { margin-bottom: 12px; }
+
+    .form-input {
+      display: block;
+      width: 280px;
+      height: 36px;
+      padding: 0 10px;
+      border: 1px solid #bdbdbd;
+      border-radius: 2px;
+      font-size: 13px;
+      color: #37474f;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+    .form-input::placeholder { color: #9e9e9e; }
+    .form-input:focus,
+    .form-input.active-field {
+      border-color: #00acc1;
+      border-width: 2px;
+    }
+
+    .btn-login {
+      margin-top: 8px;
+      padding: 0 20px;
+      height: 36px;
+      background: #00838f;
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-login:hover { background: #006064; }
+    .btn-login:active { background: #004d50; }
+
+    .error-msg {
+      display: none;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #c62828;
+    }
+    .error-msg.visible { display: block; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-toggle" title="Переключить режим отображения">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <line x1="17" y1="12" x2="7" y2="12"/>
+        <polyline points="11 16 7 12 11 8"/>
+        <line x1="7" y1="12" x2="17" y2="12"/>
+        <polyline points="13 8 17 12 13 16"/>
+      </svg>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-item" title="Базы данных">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3"/>
+          <path d="M21 5v6c0 1.657-4.03 3-9 3S3 12.657 3 11V5"/>
+          <path d="M21 11v6c0 1.657-4.03 3-9 3S3 18.657 3 17v-6"/>
+        </svg>
+      </div>
+
+      <div class="nav-item" title="Настройка">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+      </div>
+
+      <div class="nav-item" title="Активные задачи">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+          <line x1="8" y1="18" x2="21" y2="18"/>
+          <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/>
+          <line x1="3" y1="18" x2="3.01" y2="18"/>
+        </svg>
+      </div>
+
+      <div class="nav-item" title="Конфигурация">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </div>
+
+      <div class="nav-item" title="Репликация">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="8" height="6" rx="1"/>
+          <rect x="14" y="15" width="8" height="6" rx="1"/>
+          <line x1="14" y1="6" x2="18" y2="6"/><line x1="18" y1="6" x2="18" y2="15"/>
+          <line x1="6" y1="9" x2="6" y2="18"/><line x1="6" y1="18" x2="10" y2="18"/>
+        </svg>
+      </div>
+
+      <div class="nav-item" title="Новости">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      </div>
+
+      <div class="nav-item" title="Документация">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <line x1="3" y1="9" x2="21" y2="9"/>
+          <line x1="3" y1="15" x2="21" y2="15"/>
+          <line x1="9" y1="9" x2="9" y2="21"/>
+        </svg>
+      </div>
+
+      <div class="nav-item" title="Проверка">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+
+      <div class="nav-item" title="Учетная запись">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+
+      <div class="nav-item" title="СУБД Енисей" style="margin-top:4px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#4dd0e1" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-version">СУБД<br>Енисей<br>v. 1.0.0</div>
+      <div class="sidebar-login-label">Вход</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="main-header">
+      <span class="header-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <line x1="17" y1="12" x2="7" y2="12"/>
+          <polyline points="11 16 7 12 11 8"/>
+          <line x1="7" y1="12" x2="17" y2="12"/>
+          <polyline points="13 8 17 12 13 16"/>
+        </svg>
+      </span>
+      <h1 class="header-title">Вход в СУБД Енисей</h1>
+    </header>
+
+    <section class="main-body">
+      <p class="login-hint">Введите имя пользователя и пароль.</p>
+
+      <div class="form-group">
+        <input id="username" class="form-input active-field"
+               type="text" placeholder="Имя пользователя" autocomplete="username" />
+      </div>
+
+      <div class="form-group">
+        <input id="password" class="form-input"
+               type="password" placeholder="Пароль" autocomplete="current-password" />
+      </div>
+
+      <button class="btn-login" onclick="handleLogin()">Войти</button>
+
+      <p class="error-msg" id="errorMsg">
+        Неверное имя пользователя или пароль. Повторите попытку.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    usernameInput.addEventListener('focus', () => usernameInput.classList.add('active-field'));
+    usernameInput.addEventListener('blur',  () => usernameInput.classList.remove('active-field'));
+    passwordInput.addEventListener('focus', () => passwordInput.classList.add('active-field'));
+    passwordInput.addEventListener('blur',  () => passwordInput.classList.remove('active-field'));
+
+    [usernameInput, passwordInput].forEach(el => {
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+    });
+
+    function handleLogin() {
+      const user = usernameInput.value.trim();
+      const pass = passwordInput.value.trim();
+      const err  = document.getElementById('errorMsg');
+      if (!user || !pass) { err.classList.add('visible'); return; }
+      err.classList.remove('visible');
+      // Здесь подключить реальную аутентификацию
+      alert('Авторизация: ' + user);
+    }
+  </script>
+</body>
+</html>
